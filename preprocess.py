@@ -25,5 +25,4 @@ def text2label(string):
             label.append(joong + 21)
             if jong: label.append(jong + 42)
 
-    return label            
-    
+    return label
