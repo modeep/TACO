@@ -26,3 +26,15 @@ def text2label(string):
             if jong: label.append(jong + 42)
 
     return label
+
+
+# load text data
+def load_text(txt_path):
+    with open(txt_path, 'rt', encoding='UTF8') as  txt:
+        lines = txt.readlines()
+        texts = list(map(lambda x: x.split('|')[1], lines))
+    return texts
+
+
+if __name__ == '__main__':
+    print(load_text('d:/Repos/TACO/kss/transcript.txt'))  
