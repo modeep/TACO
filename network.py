@@ -4,8 +4,9 @@ import torch.nn as nn
 
 
 class Prenet(nn.Module):
-    def __init__(self, input):
+    def __init__(self, vocab_size, hidden_size):
         super(prenet, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, hidden_size)
         self.net = nn.Sequential(OrderedDict([
             ('fc1', nn.Linear(256, 256)),
             ('relu1', nn.ReLU()),
@@ -16,7 +17,8 @@ class Prenet(nn.Module):
         ]))
 
     def forward(input):
-        output = self.net(input)
+        output = self.embedding(input)
+        output = self.net(output)
 
         return output
 
@@ -40,3 +42,7 @@ class CBHG(nn.Module):
     def forward(self, x):
         pass 
 
+
+if __name__ == '__main__':
+    prenet = Prenet(70, 300)
+    
