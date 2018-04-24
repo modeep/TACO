@@ -1,7 +1,10 @@
-import matplotlib.pyplot as plt
-from hanja import hangul
-from scipy import signal
-from scipy.io import wavfile
+import numpy as np
+import torch 
+import torchvision
+import torchvision.dataset as dset 
+
+from torch.autograd import Variable
+from torch.utils.data import DataLoader, Dataset
 
 
 # input은 wav format, return 은 spectrogram
@@ -43,7 +46,23 @@ def load_text(txt_path):
     return texts
 
 
-if __name__ == '__main__':
-    # b = [x[1] for x in load_text('d:/Repos/TACO/kss/transcript.txt')]
-    # a = [text2label(x) for x in b]
+# zero padding 
+def pad_sequence(sequences):
+    max_length = max([len(seq) for seq in sequences])
+    pass # for seq in sequences: 
+    #     while
+    return None
 
+class DataSet(Dataset):
+    def __init__(self, data_path, transform):
+        self.data_path = data_path
+        self.transform = transform
+
+
+if __name__ == '__main__':
+    transcript_path = 'd:/Repos/TACO/kss/transcript.txt'
+    b = [x[1] for x in load_text(transcript_path)] # get all info from script (file_name, char sequence, duration)
+    a = [text2label(x) for x in b] # convert label from char sequence to digit number for training
+    c = max([len(x) for x in a]) # get max length for padding 
+
+    pad_sequence(a)

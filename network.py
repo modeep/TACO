@@ -44,5 +44,12 @@ class CBHG(nn.Module):
 
 
 if __name__ == '__main__':
+    from preprocess import load_text, text2label
+
     prenet = Prenet(70, 300)
     
+    b = [x[1] for x in load_text('d:/Repos/TACO/kss/transcript.txt')]
+    a = [text2label(x) for x in ]
+
+    one_hot -> 0 0 0 0 0 1 0 0 0 0 
+    zero_padding -> one_hot one_hot zero zero 
