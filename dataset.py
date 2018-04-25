@@ -23,22 +23,25 @@ def wav2spectrogram(wav_path):
 def text2label(string):
     digit_dict = {'0': '영', '1': '일', '2':'이', '3':'삼', '4':'사', 
                   '5':'오', '6':'육', '7':'칠', '8':'팔', '9':'구'}
-    label = list()
-    for i, c in enumerate(string):
-        if c == ' ': 
-            label.append(70)
-        elif c == '.' or c == '?' or c == '!':
-            continue
-        else:
-            if c.isdigit():
-                c = digit_dict[c]
+    labels = list()
+    for seq in string:
+        label = list()
+        for i, c in enumerate(seq):
+            if c == ' ': 
+                label.append(70)
+            elif c == '.' or c == '?' or c == '!':
+                continue
+            else:
+                if c.isdigit():
+                    c = digit_dict[c]
 
-            cho, joong, jong = hangul.separate(c)
-            label.append(cho)
-            label.append(joong + 21)
-            if jong: label.append(jong + 42)
+                cho, joong, jong = hangul.separate(c)
+                label.append(cho)
+                label.append(joong + 21)
+                if jong: label.append(jong + 42)
+        labels.append(label)
 
-    return np.array(label)
+    return np.array(labels)
 
 
 # load text data
@@ -54,9 +57,7 @@ def load_text(txt_path):
 # zero padding 
 def pad_sequence(sequences):
     max_length = max([len(seq) for seq in sequences])
-    pass # for seq in sequences: 
-    #     while
-    return None
+    return [seq + [71] * (max_length - len(seq)) for seq in sequences]
 
 
 class TextDataset(Dataset):
@@ -64,9 +65,9 @@ class TextDataset(Dataset):
         data = np.array(load_text(data_path))
 
         self.file = data[:, 0]
-        self.text = data[:, 1]
+        self.text = pad_sequence(text2label(data[:, 1]))
         self.time = data[:, 2]
-
+        
     def __getitem__(self, index):
         return self.text[index]
 
@@ -83,4 +84,5 @@ if __name__ == '__main__':
                              batch_size=32, 
                              shuffle=True,
                              num_workers=2)
+    
     print('Dataset making and Loading Success')
