@@ -1,10 +1,15 @@
 import numpy as np
 import torch 
 import torchvision
-import torchvision.dataset as dset 
+import torch.nn as nn
+import torchvision.datasets as dset 
 
 from torch.autograd import Variable
 from torch.utils.data import DataLoader, Dataset
+
+from hanja import hangul
+from scipy import signal
+from scipy.io import wavfile
 
 
 # input은 wav format, return 은 spectrogram
@@ -33,7 +38,7 @@ def text2label(string):
             label.append(joong + 21)
             if jong: label.append(jong + 42)
 
-    return label
+    return np.array(label)
 
 
 # load text data
@@ -42,7 +47,7 @@ def load_text(txt_path):
     f = lambda x: x[:2] + x[3:]
     with open(txt_path, 'rt', encoding='UTF8') as  txt:
         lines = txt.readlines()
-        texts = list(map(lambda x: f(x.split('|')), lines))
+        texts = list(map(lambda x: f(x.strip().split('|')), lines))
     return texts
 
 
@@ -53,16 +58,29 @@ def pad_sequence(sequences):
     #     while
     return None
 
-class DataSet(Dataset):
-    def __init__(self, data_path, transform):
-        self.data_path = data_path
-        self.transform = transform
+
+class TextDataset(Dataset):
+    def __init__(self, data_path):
+        data = np.array(load_text(data_path))
+
+        self.file = data[:, 0]
+        self.text = data[:, 1]
+        self.time = data[:, 2]
+
+    def __getitem__(self, index):
+        return self.text[index]
+
+    def __len__(self):
+        return len(self.time)
+
 
 
 if __name__ == '__main__':
-    transcript_path = 'd:/Repos/TACO/kss/transcript.txt'
-    b = [x[1] for x in load_text(transcript_path)] # get all info from script (file_name, char sequence, duration)
-    a = [text2label(x) for x in b] # convert label from char sequence to digit number for training
-    c = max([len(x) for x in a]) # get max length for padding 
-
-    pad_sequence(a)
+    transcript_path = 'kss/transcript.txt'
+    
+    txt_dataset = TextDataset(transcript_path)
+    data_loader = DataLoader(dataset=txt_dataset, 
+                             batch_size=32, 
+                             shuffle=True,
+                             num_workers=2)
+    print('Dataset making and Loading Success')

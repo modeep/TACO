@@ -1,11 +1,14 @@
 import torch 
 import torchvision 
 import torch.nn as nn
+import numpy as np 
+
+from collections import OrderedDict
 
 
 class Prenet(nn.Module):
     def __init__(self, vocab_size, hidden_size):
-        super(prenet, self).__init__()
+        super(Prenet, self).__init__()
         self.embedding = nn.Embedding(vocab_size, hidden_size)
         self.net = nn.Sequential(OrderedDict([
             ('fc1', nn.Linear(256, 256)),
@@ -41,15 +44,3 @@ class CBHG(nn.Module):
 
     def forward(self, x):
         pass 
-
-
-if __name__ == '__main__':
-    from preprocess import load_text, text2label
-
-    prenet = Prenet(70, 300)
-    
-    b = [x[1] for x in load_text('d:/Repos/TACO/kss/transcript.txt')]
-    a = [text2label(x) for x in ]
-
-    one_hot -> 0 0 0 0 0 1 0 0 0 0 
-    zero_padding -> one_hot one_hot zero zero 

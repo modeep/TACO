@@ -1,4 +1,4 @@
 {
     "python.linting.pylintEnabled": false,
-    "python.pythonPath": "D:/Program/Anaconda3/envs/torch/python"
+    "python.pythonPath": "/home/curaai/anaconda3/envs/torch/bin/python"
 }
