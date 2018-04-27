@@ -49,9 +49,6 @@ def text2label(string):
                     c = digit_dict[c]
 
                 cho, joong, jong = hangul.separate(c)
-                print(cho, joong, jong, c)
-                
-
                 label.append(one_hot(cho, char_length))
                 label.append(one_hot(joong + 21, char_length))
                 if jong: label.append(one_hot(jong + 42, char_length))
