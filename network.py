@@ -3,12 +3,16 @@ import torchvision
 import torch.nn as nn
 import numpy as np 
 
+from torch.utils.data import DataLoader
 from collections import OrderedDict
+
+from dataset import TextDataset
 
 
 class Prenet(nn.Module):
     def __init__(self, vocab_size, hidden_size):
         super(Prenet, self).__init__()
+        
         self.embedding = nn.Embedding(vocab_size, hidden_size)
         self.net = nn.Sequential(OrderedDict([
             ('fc1', nn.Linear(256, 256)),
@@ -20,7 +24,8 @@ class Prenet(nn.Module):
         ]))
 
     def forward(input):
-        output = self.embedding(input)
+        output = nn.utils.rnn.pad_sequence(input)
+        output = self.embedding(output)
         output = self.net(output)
 
         return output
@@ -44,3 +49,17 @@ class CBHG(nn.Module):
 
     def forward(self, x):
         pass 
+
+
+if __name__ == '__main__':
+    transcript_path = 'kss/transcript.txt'
+    
+    txt_dataset = TextDataset(transcript_path)
+    data_loader = DataLoader(dataset=txt_dataset, 
+                             batch_size=32, 
+                             shuffle=True,
+                             num_workers=2)
+    
+    print('Dataset making and Loading Success')
+    
+    prenet = Prenet()

@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import torch 
 import torchvision
@@ -12,6 +13,16 @@ from scipy import signal
 from scipy.io import wavfile
 
 
+# 그저 one_hot ...
+def one_hot(i, length):
+    if i == -75:
+        i += 1
+        pass
+    array = np.zeros(length)
+    array[i] = 1
+    return array
+
+
 # input은 wav format, return 은 spectrogram
 def wav2spectrogram(wav_path):
     sample_rate, samples = wavfile.read(wav_path)
@@ -20,25 +31,30 @@ def wav2spectrogram(wav_path):
 
 # input은 문자열, return은 각 자/모음 나열
 # Range=> 초성: 0~20, 중성: 21~41, 종성: 42~69, 띄어쓰기 70, NULL 71
+filter = re.compile('[^ ㄱ-ㅣ가-힣0-9]+')
 def text2label(string):
     digit_dict = {'0': '영', '1': '일', '2':'이', '3':'삼', '4':'사', 
                   '5':'오', '6':'육', '7':'칠', '8':'팔', '9':'구'}
+    char_length = 72 
+
     labels = list()
     for seq in string:
         label = list()
+        seq = filter.sub('', seq)
         for i, c in enumerate(seq):
             if c == ' ': 
                 label.append(70)
-            elif c == '.' or c == '?' or c == '!':
-                continue
             else:
                 if c.isdigit():
                     c = digit_dict[c]
 
                 cho, joong, jong = hangul.separate(c)
-                label.append(cho)
-                label.append(joong + 21)
-                if jong: label.append(jong + 42)
+                print(cho, joong, jong, c)
+                
+
+                label.append(one_hot(cho, char_length))
+                label.append(one_hot(joong + 21, char_length))
+                if jong: label.append(one_hot(jong + 42, char_length))
         labels.append(label)
 
     return np.array(labels)
